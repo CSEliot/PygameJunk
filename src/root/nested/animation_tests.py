@@ -1,4 +1,4 @@
-import pygame, sys, os, pgext
+import pygame, sys, os, pgext, numpy
 from pygame.locals import *
 from pygame.compat import geterror
 from pygame.examples import *
@@ -11,7 +11,7 @@ pygame.init()
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 
-FPS = 30  # frames per second setting
+FPS = 1000  # frames per second setting
 fpsClock = pygame.time.Clock()
 
 # set up the window
@@ -45,17 +45,25 @@ def inverted(img):
 
 def main():
 
-
-    ring_img, ring_rect = load_image('circles/G_new.png', -1)
-    background, background_rect, = load_image('starBg.png')
+    i = 0
+    circ_img, circ_rect = load_image('circles/R_small.png', -1)
+    ring_img, ring_rect = load_image('ring_new.png', -1)
+    background, background_rect, = load_image('circles/R_small.png')
+    backCrop = pygame.Surface((DISPLAYSURF.get_width(), DISPLAYSURF.get_height()))
+    backCrop.blit(background, (0, 0), (0, 0, DISPLAYSURF.get_width(), DISPLAYSURF.get_height()))
+    background, background_rect = backCrop.copy(), backCrop.copy().get_rect()
+    backTemp = background.copy()
     ringx = 0
     ringy = 0
+    circ_rect.center = (500, 375)
     ring_rect.center = (500, 375)
     direction = 'right'
     rotateBy = 10
-    circle_size = 5
+    circle_size = 500
     alpha_count = 255
     change = False
+    fpsList = []
+    light_size = 1
 
     angle = 0
     going = True
@@ -66,17 +74,26 @@ def main():
                 going = False
             elif event.type == KEYDOWN and event.key == K_k:
                 circle_size += 10
+                # pgext.color.setColor(ring_img, (circle_size, 0, 200))
             elif event.type == KEYDOWN and event.key == K_l:
                 if not circle_size <= 10:
                     circle_size -= 10
+                    # pgext.color.setColor(ring_img, (circle_size, 0, 200))
             elif event.type == KEYDOWN and event.key == K_w:
-                change = True
-                pgext.color.setAlpha(ring_img, alpha_count, 1)
+                if light_size <= 3:
+                    light_size += 0.1
+                    del(background)
+                    background = backTemp.copy()
+                    pgext.color.multiply(background, light_size)
             elif event.type == KEYDOWN and event.key == K_e:
-                change = True
-                pgext.color.setAlpha(ring_img, alpha_count, 1)
+                if light_size >= .11:
+                    light_size -= 0.1
+                    del(background)
+                    background = backTemp.copy()
+                    pgext.color.multiply(background, light_size)
+            elif event.type == KEYDOWN and event.key == K_s:
+                background = backTemp
 #        DISPLAYSURF.fill(WHITE)
-        DISPLAYSURF.blit(background, (0, 0))
 
         for p in pygame.key.get_pressed():
             if not p:
@@ -85,7 +102,14 @@ def main():
         ring_rectNew = ring_imgNew.get_rect()
         ring_rectNew.center = (550, 425)
 
-        print fpsClock.get_fps()
+        i += 1
+        fpsList.append(fpsClock.get_fps())
+        if i == FPS:
+            print mean(fpsList)
+            i = 0
+            fpsList = []
+        DISPLAYSURF.blit(background, (0, 0))
+        DISPLAYSURF.blit(circ_img, circ_rect)
         DISPLAYSURF.blit(ring_imgNew, ring_rectNew)
         fpsClock.tick(FPS)
         pygame.display.update()
