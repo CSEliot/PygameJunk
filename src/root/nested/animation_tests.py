@@ -11,7 +11,7 @@ pygame.init()
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 
-FPS = 1000  # frames per second setting
+FPS = 30  # frames per second setting
 fpsClock = pygame.time.Clock()
 
 # set up the window
@@ -59,7 +59,7 @@ def main():
     ring_rect.center = (500, 375)
     direction = 'right'
     rotateBy = 10
-    circle_size = 500
+    circle_size = 100
     alpha_count = 255
     change = False
     fpsList = []
@@ -98,6 +98,7 @@ def main():
         for p in pygame.key.get_pressed():
             if not p:
                 angle += rotateBy
+        print circle_size
         ring_imgNew = pygame.transform.smoothscale(ring_img, (circle_size, circle_size))  # .convert_alpha()
         ring_rectNew = ring_imgNew.get_rect()
         ring_rectNew.center = (550, 425)
