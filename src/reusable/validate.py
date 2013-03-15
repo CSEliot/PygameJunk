@@ -22,12 +22,10 @@ def cvalidate(vtype, comparator, comparatee=None):
             if comparator in comparatee:
                 return True
             else:
-                print "Please enter a Valid string."
                 return False
         elif type(comparator) is str:
             return comparator
         else:
-            print "Please enter a Valid string."
             return False
     elif vtype == 'int':
         # make sure the user gave us an int, if true, change comp. to an int
@@ -42,12 +40,10 @@ def cvalidate(vtype, comparator, comparatee=None):
             if  rList[0] <= comparator <= rList[1]:
                 return True
             else:
-                print "Please enter a Valid integer."
                 return False
         if type(comparator) is int:
             return comparator
         else:
-            print "Please enter a Valid integer."
             return False
     elif vtype == 'long':
         # make sure the user gave us an int, if true, change comp. to an int
@@ -70,13 +66,11 @@ def cvalidate(vtype, comparator, comparatee=None):
         try:
             temp = float(comparator)  # @UnusedVariable
         except ValueError:
-            print "Please enter a Valid float."
             return False
         # and if it can't be turned into an int, then it is a float.
         # and we are looking for a float, so we WANT this to throw an exception
         try:
             comparator = int(comparator)
-            print "Please enter a Valid float."
             return False
         except ValueError:
             valid = True
@@ -87,12 +81,10 @@ def cvalidate(vtype, comparator, comparatee=None):
             if  rList[0] <= comparator <= rList[1]:
                 return True
             else:
-                print "Please enter a Valid float."
                 return False
         if type(comparator) is float:
             return comparator
         else:
-            print "Please enter a Valid string."
             return False
     elif vtype == 'list':
         if type(comparator) is list:
@@ -102,12 +94,10 @@ def cvalidate(vtype, comparator, comparatee=None):
             if comparator == comparatee:
                 return True
             else:
-                print "Please enter a Valid list."
                 return False
         elif type(comparator) is list:
             return comparator
         else:
-            print "Please enter a Valid list."
             return False
     elif vtype == 'bool':
         # this only takes a True or False
@@ -118,12 +108,10 @@ def cvalidate(vtype, comparator, comparatee=None):
             if comparator == comparatee:
                 return True
             else:
-                print "Please enter a Valid boolean."
                 return False
         elif type(comparator) is bool:
             return comparator
         else:
-            print "Please enter a Valid boolean."
             return False
     elif comparator == 'Quit...':
         # returning something that isn't False, if in a while loop
