@@ -8,7 +8,7 @@ follow along in the tutorial.
 
 
 # Import Modules
-import os, pygame, pygame.gfxdraw
+import os, pygame, pygame.gfxdraw, pgext
 from pygame.locals import *  # @UnusedWildImport
 from pygame.compat import geterror
 
@@ -53,7 +53,7 @@ class Fist(pygame.sprite.Sprite):
     """moves a clenched fist on the screen, following the mouse"""
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
-        self.image, self.rect = load_image('ring.png', -1)
+        self.image, self.rect = load_image('fist.bmp', -1)
         self.punching = 0
 
     def update(self):
@@ -78,14 +78,16 @@ class Fist(pygame.sprite.Sprite):
 class Chimp(pygame.sprite.Sprite):
     """moves a monkey critter across the screen. it can spin the
        monkey when it is punched."""
-    def __init__(self):
+    def __init__(self, layer, color):
         pygame.sprite.Sprite.__init__(self)  # call Sprite intializer
-        self.image, self.rect = load_image('chimp.bmp', -1)
+        self.image, self.rect = load_image('chimp.bmp')
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
-        self.rect.topleft = 10, 10
-        self.move = 9
+        self.rect.topleft = 20, 20
+        self.move = 3
         self.dizzy = 0
+        self._layer = layer
+        pgext.color.setColor(self.image, color)
 
     def update(self):
         "walk or spin, depending on the monkeys state"
@@ -121,28 +123,7 @@ class Chimp(pygame.sprite.Sprite):
         if not self.dizzy:
             self.dizzy = 1
             self.original = self.image
-    def DrawTarget(self):
 
-        # outside antialiased circle
-        pygame.gfxdraw.aacircle(self.image, self.rect.width / 2, self.rect.height / 2, self.rect.width / 2 - 1, color.Color('green'))
-
-        # outside filled circle
-        pygame.gfxdraw.filled_ellipse(self.image, self.rect.width / 2, self.rect.height / 2, self.rect.width / 2 - 1, self.rect.width / 2 - 1, self.color)
-
-
-        temp = pygame.Surface((TARGET_SIZE, TARGET_SIZE), SRCALPHA)  # the SRCALPHA flag denotes pixel-level alpha
-
-        if (self.filled == False):
-            # inside background color circle
-
-            pygame.gfxdraw.filled_ellipse(temp, self.rect.width / 2, self.rect.height / 2, self.rect.width / 2 - self.width, self.rect.width / 2 - self.width, BG_ALPHA_COLOR)
-
-            # inside antialiased circle
-
-            pygame.gfxdraw.aacircle(temp, self.rect.width / 2, self.rect.height / 2, self.rect.width / 2 - self.width, BG_ALPHA_COLOR)
-
-
-        self.image.blit(temp, (0, 0), None, BLEND_ADD)
 
 
 def main():
@@ -178,11 +159,13 @@ def main():
     clock = pygame.time.Clock()
     whiff_sound = load_sound('whiff.wav')
     punch_sound = load_sound('punch.wav')
-    chimp = Chimp()
     fist = Fist()
-    allsprites = pygame.sprite.RenderPlain((fist, chimp))
-
-
+    FistSprites = pygame.sprite.RenderPlain((fist))
+    chimpSprites = pygame.sprite.LayeredUpdates(())
+    move = 2
+    layer = 0
+    colorSpace = 0
+    color = (0,0,0)
 # Main Loop
     going = True
     while going:
@@ -194,8 +177,26 @@ def main():
                 going = False
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 going = False
+            elif event.type == KEYDOWN and event.key == K_p:
+#                 tempChimp = Chimp(layer)
+                #change which color is highlighted
+                colorSpace += 1
+                if colorSpace == 3:
+                    colorSpace = 0
+                if colorSpace == 0:
+                    color = (255,0,0)
+                elif colorSpace == 1:
+                    color = (0,255,0)
+                else:
+                    color = (0,0,255)
+                chimpSprites.add(Chimp(layer, color))
+                layer += 1
+            elif event.type == KEYDOWN and event.key == K_k:
+                if len(chimpSprites.sprites()) > 0:
+                    print len(chimpSprites.sprites())
+                    print chimpSprites.get_top_sprite()._layer
+                    chimpSprites.get_top_sprite().kill()
             elif event.type == MOUSEBUTTONDOWN:
-                chimp.DrawTarget()
                 if fist.punch(chimp):
                     punch_sound.play()  # punch
                     chimp.punched()
@@ -204,11 +205,13 @@ def main():
             elif event.type == MOUSEBUTTONUP:
                 fist.unpunch()
 
-        allsprites.update()
+        FistSprites.update()
+        chimpSprites.update()
 
         # Draw Everything
         screen.blit(background, (0, 0))
-        allsprites.draw(screen)
+        chimpSprites.draw(screen)
+        FistSprites.draw(screen)
         pygame.display.flip()
 
     pygame.quit()
