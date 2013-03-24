@@ -178,7 +178,6 @@ def main():
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 going = False
             elif event.type == KEYDOWN and event.key == K_p:
-#                 tempChimp = Chimp(layer)
                 #change which color is highlighted
                 colorSpace += 1
                 if colorSpace == 3:
@@ -189,7 +188,8 @@ def main():
                     color = (0,255,0)
                 else:
                     color = (0,0,255)
-                chimpSprites.add(Chimp(layer, color))
+                tempChimp = Chimp(layer, color)
+                chimpSprites.add(tempChimp)
                 layer += 1
             elif event.type == KEYDOWN and event.key == K_k:
                 if len(chimpSprites.sprites()) > 0:
