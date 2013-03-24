@@ -26,7 +26,7 @@ zoom_amount = 0.01
 def load_image(name, colorkey=None):
     fullname = os.path.join(data_dir, name)
     try:
-        image = pygame.image.load(fullname).convert_alpha()
+        image = pygame.image.load(fullname)
     except pygame.error:
         print ('Cannot load image:', fullname)
         raise SystemExit(str(geterror()))
@@ -44,9 +44,14 @@ def inverted(img):
    return inv
 
 def main():
+    image = pygame.image.load("source.png")
+    # set 40% alpha
+    pgext.color.setAlpha(image, 40, 2)
+    pygame.image.save(image, "out.png")
 
     i = 0
-    circ_img, circ_rect = load_image('circles/R_small.png', -1)
+    circ_img, circ_rect = load_image('ring_new.png', -1)
+    OGCirc_img, _ = load_image('circles/R_small.png')
     ring_img, ring_rect = load_image('ring_new.png', -1)
     background, background_rect, = load_image('circles/R_small.png')
     backCrop = pygame.Surface((DISPLAYSURF.get_width(), DISPLAYSURF.get_height()))
@@ -80,35 +85,39 @@ def main():
                     circle_size -= 10
                     # pgext.color.setColor(ring_img, (circle_size, 0, 200))
             elif event.type == KEYDOWN and event.key == K_w:
-                if light_size <= 3:
-                    light_size += 0.1
-                    del(background)
-                    background = backTemp.copy()
-                    pgext.color.multiply(background, light_size)
+                if light_size <= 1000:
+                    light_size += 10
+                    print light_size
+                    #circ_img = OGCirc_img
+                    pgext.color.setAlpha(circ_img, light_size, 0)
+#                    pgext.color.multiply(background, light_size)
             elif event.type == KEYDOWN and event.key == K_e:
-                if light_size >= .11:
-                    light_size -= 0.1
-                    del(background)
-                    background = backTemp.copy()
-                    pgext.color.multiply(background, light_size)
+                if light_size >= 11:
+                    light_size -= 10
+                    print light_size
+                    #circ_img = OGCirc_img
+                    pgext.color.setAlpha(circ_img, light_size, 0)
+#                     pgext.color.multiply(background, light_size)
             elif event.type == KEYDOWN and event.key == K_s:
-                background = backTemp
+                circ_img = OGCirc_img
+                DISPLAYSURF.blit(OGCirc_img, circ_rect)
+                print 'socks'
 #        DISPLAYSURF.fill(WHITE)
 
         for p in pygame.key.get_pressed():
             if not p:
                 angle += rotateBy
-        print circle_size
+        #print circle_size
         ring_imgNew = pygame.transform.smoothscale(ring_img, (circle_size, circle_size))  # .convert_alpha()
         ring_rectNew = ring_imgNew.get_rect()
         ring_rectNew.center = (550, 425)
 
         i += 1
-        fpsList.append(fpsClock.get_fps())
-        if i == FPS:
-            print mean(fpsList)
-            i = 0
-            fpsList = []
+#         fpsList.append(fpsClock.get_fps())
+#         if i == FPS:
+#             print mean(fpsList)
+#             i = 0
+#             fpsList = []
         DISPLAYSURF.blit(background, (0, 0))
         DISPLAYSURF.blit(circ_img, circ_rect)
         DISPLAYSURF.blit(ring_imgNew, ring_rectNew)
