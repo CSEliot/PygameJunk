@@ -89,7 +89,9 @@ CENTER_Y = (DISPLAYSURFACE.get_height() / 2)
 # a^2 + b^2 = c^2. This calculates the longest distance from rectangle center.
 C_LENGTH = m.sqrt((CENTER_X) ** 2 + (CENTER_Y) ** 2)
 
-
+Instructions = "INSTRUCTIONS: " + \
+               "\nU = turn on AA (useless) " + \
+               "\n"
 
 
 

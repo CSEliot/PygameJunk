@@ -44,16 +44,22 @@ def inverted(img):
    return inv
 
 def main():
-    image = pygame.image.load("source.png")
+    image = pygame.image.load("ring_gray.png")
     # set 40% alpha
-    pgext.color.setAlpha(image, 40, 2)
+    pgext.color.setAlpha(image, 50, 2)
     pygame.image.save(image, "out.png")
+    # SET REPEAT
+    pygame.key.set_repeat(100, 1)
 
     i = 0
-    circ_img, circ_rect = load_image('ring_new.png', -1)
+    circ_img = pygame.image.load('ring_gray.png')
+    circ_rect = circ_img.get_rect()
     OGCirc_img, _ = load_image('circles/R_small.png')
     ring_img, ring_rect = load_image('ring_new.png', -1)
-    background, background_rect, = load_image('circles/R_small.png')
+    background, background_rect, = load_image('starBg.png')
+    light, light_rect = load_image('play.png')
+    light = light.convert_alpha()
+    lightNew = light
     backCrop = pygame.Surface((DISPLAYSURF.get_width(), DISPLAYSURF.get_height()))
     backCrop.blit(background, (0, 0), (0, 0, DISPLAYSURF.get_width(), DISPLAYSURF.get_height()))
     background, background_rect = backCrop.copy(), backCrop.copy().get_rect()
@@ -68,49 +74,55 @@ def main():
     alpha_count = 255
     change = False
     fpsList = []
-    light_size = 1
+    light_size = 50
+    blitIt = False
+    lightUp = False
+    l_k_dial = 0
 
     angle = 0
     going = True
-    pygame.key.set_repeat(2, 1)
+#    pygame.key.set_repeat(2, 1)
+#    pgext.color.setAlpha(circ_img, 40, 0)
     while going:  # the main game loop
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 going = False
             elif event.type == KEYDOWN and event.key == K_k:
-                circle_size += 10
-                # pgext.color.setColor(ring_img, (circle_size, 0, 200))
+                if l_k_dial <= 200:
+                    l_k_dial += .5
+                    background = backTemp.copy()
+                    pgext.color.multiply(background, l_k_dial)
+                    print 'l', l_k_dial
             elif event.type == KEYDOWN and event.key == K_l:
-                if not circle_size <= 10:
-                    circle_size -= 10
-                    # pgext.color.setColor(ring_img, (circle_size, 0, 200))
+                if l_k_dial >= 0:
+                    l_k_dial -= .5
+                    background = backTemp.copy()
+                    pgext.color.multiply(background, l_k_dial)
+                    print 'l', l_k_dial
             elif event.type == KEYDOWN and event.key == K_w:
-                if light_size <= 1000:
-                    light_size += 10
+                # make it brighter
+                if light_size <= 255:
+                    light_size += 1
                     print light_size
-                    #circ_img = OGCirc_img
-                    pgext.color.setAlpha(circ_img, light_size, 0)
-#                    pgext.color.multiply(background, light_size)
+                    pgext.color.hue(background, light_size, 1)
             elif event.type == KEYDOWN and event.key == K_e:
-                if light_size >= 11:
-                    light_size -= 10
+                # make it darker
+                if light_size >= 0:
+                    light_size -= 1
                     print light_size
-                    #circ_img = OGCirc_img
-                    pgext.color.setAlpha(circ_img, light_size, 0)
-#                     pgext.color.multiply(background, light_size)
+                    pgext.color.hue(background, light_size, 1)
             elif event.type == KEYDOWN and event.key == K_s:
-                circ_img = OGCirc_img
-                DISPLAYSURF.blit(OGCirc_img, circ_rect)
-                print 'socks'
-#        DISPLAYSURF.fill(WHITE)
+                # change hue
+                pixarray = pygame.PixelArray(background)
+                pixarray.replace((255, 255, 255), (50, 0, 0))
+                del pixarray
+                print 's'
+            elif event.type == KEYDOWN and event.key == K_z:
+                # undo
+                print 'z'
+                background = backTemp.copy()
 
-        for p in pygame.key.get_pressed():
-            if not p:
-                angle += rotateBy
-        #print circle_size
-        ring_imgNew = pygame.transform.smoothscale(ring_img, (circle_size, circle_size))  # .convert_alpha()
-        ring_rectNew = ring_imgNew.get_rect()
-        ring_rectNew.center = (550, 425)
+        print K_LEFT
 
         i += 1
 #         fpsList.append(fpsClock.get_fps())
@@ -118,11 +130,11 @@ def main():
 #             print mean(fpsList)
 #             i = 0
 #             fpsList = []
+        DISPLAYSURF.fill((0, 0, 0))
         DISPLAYSURF.blit(background, (0, 0))
-        DISPLAYSURF.blit(circ_img, circ_rect)
-        DISPLAYSURF.blit(ring_imgNew, ring_rectNew)
         fpsClock.tick(FPS)
         pygame.display.update()
+
 
 
     pygame.quit()
