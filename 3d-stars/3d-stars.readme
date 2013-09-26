@@ -1,0 +1,33 @@
+Name: Gareth Noyce (AKA Korruptor)
+Email: g@korruptor.demon.co.uk
+Home: http://www.korruptor.demo.co.uk
+Proggy: 3D-STARS.PY
+ 
+Desc:
+-----
+ 
+ Erm, it's a 3D star field. Not much more description to give; does what it says on the tin! Oh, go on then...:
+ 
+ As you know, a 3d point consists of X,Y,Z values. However, your screen is a 2d plane so we 
+ perform a  3d to 2d conversion:
+ 
+   ScreenX := ((X * 256) / Z) + (half the screen width)
+   ScreenY := ((Y * 256) / Z) + (half the screen height)
+
+ the x and y are setup as random ints between -(screen_[x|y]/2) && (screen_[x|y]/2) and z as 255, all
+ stored in a big array. We cycle through as follows:
+ 
+ Top Down:
+ 
+ - Check Z (and do appropiate action)
+ - Delete old star
+ - Calculate Screen X
+ - Calculate Screen Y
+ - Range check X
+ - Range check Y
+ - kill star if needed
+ - Plot star if not
+ - Decrease Z either way
+ 
+  The usual erase and draw rules apply.  
+

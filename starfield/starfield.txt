@@ -1,0 +1,31 @@
+starfield.py - A starfield class for pygame.
+Author - David Clark
+Date - December 2, 2001
+
+starfield.py is a pretty solid class for rendering a parallax starfield
+effect onto an arbitrary surface.  You can set the number of stars, their
+angle, speed, color and size.  You can render onto the entire surface, or
+just a certain portion of that surface.  You can change the starfield's
+direction and speed on the fly.
+
+The class includes an example script - just run "python starfield.py" to
+see it. Use the arrow keys. Up/Down changes the speed of the starfield, and
+Right/Left changes the direction in ten degree increments.  Hit ESC to quit.
+
+There are two flaws I can see in the code. First, the 
+Star._calculate_axis_speeds() function is slow (although it's as fast as
+possible without forcing the user to specify angles in radians :))  The result
+is a visible pause when changing starfield direction or speed.  The function
+was written to allow arbitrary angles; most games don't need that kind of
+precision.  Try precalculating the values that you'll need before the game
+begins, then plugging them into this function during gameplay, rather than
+recalculating these trig values every time the user hits a key.
+
+The second flaw is that the stars are drawn in the order they're created, not
+in z-order from furthest to closest.  Try setting the STAR_SIZE_IN_PIXELS to 
+10 to see the effect - more distant stars occasionally move over closer ones.
+This effect may be visible with any star size over 1, although at lower values,
+the effect will be negligible.  Star sizes over 2 aren't recommended anyway, 
+since the stars are square, not round :)
+
+
