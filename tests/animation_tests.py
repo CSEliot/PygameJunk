@@ -54,9 +54,10 @@ def main():
     i = 0
     circ_img = pygame.image.load('ring_gray.png')
     circ_rect = circ_img.get_rect()
-    OGCirc_img, _ = load_image('circles/R_small.png')
+    OGCirc_img, circ_rect = load_image('circles/R_small.png')
     ring_img, ring_rect = load_image('ring_new.png', -1)
     background, background_rect, = load_image('starBg.png')
+    OGBackground = background.copy()
     light, light_rect = load_image('play.png')
     light = light.convert_alpha()
     lightNew = light
@@ -77,27 +78,40 @@ def main():
     light_size = 50
     blitIt = False
     lightUp = False
-    l_k_dial = 0
+    l_k_dial = 100
+    bgRotAngle = 0
 
     angle = 0
     going = True
 #    pygame.key.set_repeat(2, 1)
 #    pgext.color.setAlpha(circ_img, 40, 0)
     while going:  # the main game loop
+        
+        """ROTATION TESTING"""
+        # rotate the background ;)
+        bgRotAngle += .04
+        background = pygame.transform.rotozoom(OGBackground, bgRotAngle%360 , 1)
+        background_rect = background.get_rect()
+        background_rect.center = DISPLAYSURF.get_rect().center
+        
+        
+        
+        
+        
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 going = False
             elif event.type == KEYDOWN and event.key == K_k:
                 if l_k_dial <= 200:
-                    l_k_dial += .5
-                    background = backTemp.copy()
-                    pgext.color.multiply(background, l_k_dial)
-                    print 'l', l_k_dial
+                    l_k_dial += 5
+#                     background = backTemp.copy()
+                    pgext.color.setAlpha(OGCirc_img, l_k_dial, 2)
+                    print 'k', l_k_dial
             elif event.type == KEYDOWN and event.key == K_l:
                 if l_k_dial >= 0:
-                    l_k_dial -= .5
-                    background = backTemp.copy()
-                    pgext.color.multiply(background, l_k_dial)
+                    l_k_dial -= 5
+#                     background = backTemp.copy()
+                    pgext.color.setAlpha(OGCirc_img, 1*l_k_dial, 2)
                     print 'l', l_k_dial
             elif event.type == KEYDOWN and event.key == K_w:
                 # make it brighter
@@ -121,8 +135,9 @@ def main():
                 # undo
                 print 'z'
                 background = backTemp.copy()
+            elif event.type == KEYDOWN and event.key == K_r:
+                pass
 
-        print K_LEFT
 
         i += 1
 #         fpsList.append(fpsClock.get_fps())
@@ -130,8 +145,9 @@ def main():
 #             print mean(fpsList)
 #             i = 0
 #             fpsList = []
-        DISPLAYSURF.fill((0, 0, 0))
-        DISPLAYSURF.blit(background, (0, 0))
+        #DISPLAYSURF.fill((0, 0, 0))
+        DISPLAYSURF.blit(background, background_rect)
+        DISPLAYSURF.blit(OGCirc_img, circ_rect)
         fpsClock.tick(FPS)
         pygame.display.update()
 
